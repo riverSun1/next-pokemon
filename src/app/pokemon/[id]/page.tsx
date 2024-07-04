@@ -3,6 +3,7 @@ import { pokemonDetailData } from "@/server/api/api.deatail";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+// 서버 컴포넌트
 
 interface ParamsProps {
   params: { id: string };
@@ -15,7 +16,9 @@ export async function generateMetadata({
   const id = params.id;
 
   // fetch data
-  const product = await pokemonDetailData(id);
+  const product = await fetch(`http://localhost:3000/api/pokemons/${id}`).then(
+    (res) => res.json()
+  );
 
   return {
     title: `${product.korean_name || product.name} | 상세페이지`,
