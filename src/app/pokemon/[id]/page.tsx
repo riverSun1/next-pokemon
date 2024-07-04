@@ -1,5 +1,5 @@
 // 서버 컴포넌트
-import { pokemonDetailData } from "@/server/api/api.deatail";
+import { Pokemon } from "@/types/pokemon.type";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,18 +16,18 @@ export async function generateMetadata({
   const id = params.id;
 
   // fetch data
-  const product = await fetch(`http://localhost:3000/api/pokemons/${id}`).then(
-    (res) => res.json()
-  );
+  const res = await fetch(`http://localhost:3000/api/pokemons/${id}`);
+  const data: Pokemon = await res.json();
 
   return {
-    title: `${product.korean_name || product.name} | 상세페이지`,
+    title: `${data.korean_name || data.name} | 상세페이지`,
   };
 }
 
 const PokemonDetail = async ({ params }: ParamsProps) => {
   const { id } = params;
-  const data = await pokemonDetailData(id);
+  const res = await fetch(`http://localhost:3000/api/pokemons/${id}`);
+  const data: Pokemon = await res.json();
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
@@ -44,8 +44,8 @@ const PokemonDetail = async ({ params }: ParamsProps) => {
         />
         <div className="flex flex-row gap-5">
           <p className="text-lg font-bold">키: </p>
-          {data.height} m<p className="text-lg font-bold">몸무게: </p>
-          {data.weight} kg
+          {data.height / 10} m<p className="text-lg font-bold">몸무게: </p>
+          {data.weight / 10} kg
         </div>
         <div className="flex flex-row gap-3 items-center">
           <h2 className="text-lg font-bold">타입:</h2>
