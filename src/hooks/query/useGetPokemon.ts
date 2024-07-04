@@ -8,7 +8,6 @@ export const useGetPokemon = () => {
       const response = await axios.get(`/api/pokemons`);
       return response.data;
     },
-    staleTime: 300000,
   });
 
   return { data, isPending, error };

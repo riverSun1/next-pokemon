@@ -1,4 +1,5 @@
-import { Pokemon } from "@/app/_types/pokemon.type";
+// 서버 컴포넌트
+import { pokemonDetailData } from "@/server/api/api.deatail";
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -7,29 +8,24 @@ interface ParamsProps {
   params: { id: string };
 }
 
+// Metadata
 export async function generateMetadata({
   params,
 }: ParamsProps): Promise<Metadata> {
   const id = params.id;
 
   // fetch data
-  const product = await fetch(`http://localhost:3000/api/pokemons/${id}`).then(
-    (res) => res.json()
-  );
+  const product = await pokemonDetailData(id);
 
   return {
     title: `${product.korean_name || product.name} | 상세페이지`,
   };
 }
 
+//
 const PokemonDetail = async ({ params }: ParamsProps) => {
   const { id } = params;
-  const res = await fetch(`http://localhost:3000/api/pokemons/${id}`);
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-
-  const data: Pokemon = await res.json();
+  const data = await pokemonDetailData(id);
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
