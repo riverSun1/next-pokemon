@@ -22,7 +22,6 @@ export async function generateMetadata({
   };
 }
 
-//
 const PokemonDetail = async ({ params }: ParamsProps) => {
   const { id } = params;
   const data = await pokemonDetailData(id);
