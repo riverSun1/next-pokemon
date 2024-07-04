@@ -1,29 +1,33 @@
 import { Name } from "@/types/pokemon.type";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { NextResponse } from "next/server";
 
-const TOTAL_POKEMON = 25;
+const TOTAL_POKEMON = 151;
+const PAGE_SIZE = 30;
 
 export const GET = async (request: Request) => {
+  const { searchParams } = new URL(request.url);
+  const page = parseInt(searchParams.get("page") || "1");
+  const offset = (page - 1) * PAGE_SIZE;
+
   try {
-    const allPokemonPromises = Array.from(
-      { length: TOTAL_POKEMON },
-      (_, index) => {
-        const id = index + 1;
-        // 배열로 써서 한번에 2가지 응답받음.
-        return Promise.all([
-          axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`),
-          axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`),
-        ]);
-      }
+    const allPokemonPromises = Array.from({ length: PAGE_SIZE }, (_, index) => {
+      const id = index + 1 + offset;
+      if (id > TOTAL_POKEMON) return null;
+
+      return Promise.all([
+        axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`),
+        axios.get(`https://pokeapi.co/api/v2/pokemon-species/${id}`),
+      ]);
+    }).filter(
+      (promise): promise is Promise<[AxiosResponse<any>, AxiosResponse<any>]> =>
+        promise !== null
     );
 
-    // 모든 Promise가 끝나고 한번에 받는 완전한 데이터
     const allPokemonResponses = await Promise.all(allPokemonPromises);
-    // console.log(allPokemonResponses); //
+
     const allPokemonData = allPokemonResponses.map(
-      ([response, speciesResponse], index) => {
-        //console.log(speciesResponse.data.names);
+      ([response, speciesResponse]) => {
         const koreanName = speciesResponse.data.names.find(
           (name: Name) => name.language.name === "ko"
         );
@@ -31,7 +35,16 @@ export const GET = async (request: Request) => {
       }
     );
 
-    return NextResponse.json(allPokemonData);
+    // 총 페이지 수 및 다음 페이지 여부 계산
+    const totalPages = Math.ceil(TOTAL_POKEMON / PAGE_SIZE);
+    const hasNextPage = page < totalPages;
+
+    // 결과 반환
+    return NextResponse.json({
+      data: allPokemonData,
+      totalPages,
+      hasNextPage,
+    });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch data" });
   }
