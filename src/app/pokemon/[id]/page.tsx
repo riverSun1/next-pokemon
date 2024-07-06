@@ -1,4 +1,5 @@
 // 서버 컴포넌트
+import { fetchPokemonDetail } from "@/lib/fetchPokemonDetail";
 import { Pokemon } from "@/types/pokemon.type";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -16,10 +17,7 @@ export async function generateMetadata({
   const id = params.id;
 
   // fetch data
-  const res = await fetch(
-    `https://pokemon-sun1.netlify.app/api/pokemons/${id}`
-  );
-  const data: Pokemon = await res.json();
+  const data: Pokemon = await fetchPokemonDetail(id);
 
   return {
     title: `${data.korean_name || data.name} | 상세페이지`,
@@ -28,10 +26,7 @@ export async function generateMetadata({
 
 const PokemonDetail = async ({ params }: ParamsProps) => {
   const { id } = params;
-  const res = await fetch(
-    `https://pokemon-sun1.netlify.app/api/pokemons/${id}`
-  );
-  const data: Pokemon = await res.json();
+  const data: Pokemon = await fetchPokemonDetail(id);
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center">
