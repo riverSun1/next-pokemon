@@ -16,7 +16,9 @@ export async function generateMetadata({
   const id = params.id;
 
   // fetch data
-  const res = await fetch(`http://localhost:3000/api/pokemons/${id}`);
+  const res = await fetch(
+    `https://pokemon-sun1.netlify.app/api/pokemons/${id}`
+  );
   const data: Pokemon = await res.json();
 
   return {
@@ -26,7 +28,9 @@ export async function generateMetadata({
 
 const PokemonDetail = async ({ params }: ParamsProps) => {
   const { id } = params;
-  const res = await fetch(`http://localhost:3000/api/pokemons/${id}`);
+  const res = await fetch(
+    `https://pokemon-sun1.netlify.app/api/pokemons/${id}`
+  );
   const data: Pokemon = await res.json();
 
   return (
