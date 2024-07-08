@@ -3,33 +3,27 @@ import { Pokemon } from "@/types/pokemon.type";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo } from "react";
+import { useInView } from "react-intersection-observer";
 import { v4 as uuidv4 } from "uuid";
 import monsterball from "../../../public/monsterball.png";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const PokemonList = () => {
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError } =
-    useGetPokemon();
+  const { data, fetchNextPage, isError } = useGetPokemon();
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inView]);
 
   const pokemons: Pokemon[] = useMemo(() => {
     // 모든 페이지의 데이터를 합치는 로직
     return data?.pages.flatMap((page) => page.data) || [];
   }, [data]);
-
-  const handleScroll = () => {
-    if (
-      window.innerHeight + document.documentElement.scrollTop !==
-      document.documentElement.offsetHeight
-    ) {
-      return;
-    }
-    fetchNextPage();
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   if (!data && !isError) {
     return <LoadingSpinner />;
@@ -65,6 +59,17 @@ const PokemonList = () => {
           </li>
         ))}
       </ul>
+      <div ref={ref} className="flex justify-center pt-4">
+        {inView && (
+          <Image
+            className="shake"
+            src="/monsterball.png"
+            alt="loading"
+            width={40}
+            height={40}
+          />
+        )}
+      </div>
     </div>
   );
 };

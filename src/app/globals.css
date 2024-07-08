@@ -2,34 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
 }
 
 @keyframes spin {
@@ -41,10 +14,39 @@ body {
   }
 }
 
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70% {
+    transform: translateX(-5px);
+  }
+  20%,
+  40%,
+  60% {
+    transform: translateX(5px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+  90% {
+    transform: translateX(-4px);
+  }
+}
+
 .spin {
   animation: spin 1s linear infinite;
 }
 
+.shake {
+  animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+/* 배경 컬러 */
 body {
   @apply bg-gradient-to-r from-red-200 to-yellow-200;
 }
